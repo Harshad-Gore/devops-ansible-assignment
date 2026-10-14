@@ -1,0 +1,42 @@
+---
+- name: Configure an Nginx web server
+  hosts: webservers
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Refresh APT package index
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install Nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+
+    - name: Deploy demo website
+      ansible.builtin.copy:
+        src: files/index.html
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart Nginx
+
+    - name: Ensure Nginx is enabled and running
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Verify website responds locally
+      ansible.builtin.uri:
+        url: http://127.0.0.1
+        status_code: 200
+
+  handlers:
+    - name: Restart Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted

@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en" data-mode="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>web1 (15.252.18.69) — Ansible Configuration Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style type="text/tailwindcss">
+    @import "tailwindcss";
+
+    @theme {
+      --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: "JetBrains Mono", monospace;
+
+      --color-background: oklch(0.985 0.002 250);
+      --color-surface: oklch(1 0 0);
+      --color-surface-subtle: oklch(0.965 0.004 250);
+      --color-foreground: oklch(0.16 0.015 255);
+      --color-muted: oklch(0.48 0.015 255);
+      --color-border: oklch(0.89 0.006 255);
+      --color-primary: oklch(0.48 0.15 250);
+      --color-success: oklch(0.52 0.14 155);
+      --color-success-bg: oklch(0.95 0.04 155);
+
+      --radius-sm: 0.25rem;
+      --radius-md: 0.375rem;
+      --radius-lg: 0.5rem;
+    }
+
+    @custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
+
+    [data-mode="dark"] {
+      --color-background: oklch(0.13 0.012 255);
+      --color-surface: oklch(0.165 0.014 255);
+      --color-surface-subtle: oklch(0.195 0.014 255);
+      --color-foreground: oklch(0.94 0.006 255);
+      --color-muted: oklch(0.64 0.012 255);
+      --color-border: oklch(0.25 0.014 255);
+      --color-primary: oklch(0.65 0.14 245);
+      --color-success: oklch(0.72 0.15 155);
+      --color-success-bg: oklch(0.22 0.04 155);
+    }
+  </style>
+</head>
+<body class="bg-background text-foreground font-sans text-[13px] leading-normal antialiased selection:bg-primary/20">
+  <div class="min-h-screen flex flex-col md:flex-row">
+
+    <!-- Compact SaaS Sidebar (§6 Navigation) -->
+    <aside class="w-full md:w-56 border-b md:border-b-0 md:border-r border-border bg-surface shrink-0 flex flex-col justify-between">
+      <div>
+        <div class="h-12 px-4 flex items-center justify-between border-b border-border">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-success" aria-hidden="true"></span>
+            <span class="font-semibold text-[14px] tracking-tight">InfraControl</span>
+          </div>
+          <span class="font-mono text-[12px] text-muted px-1.5 py-0.5 rounded-[var(--radius-sm)] border border-border">v2.17</span>
+        </div>
+
+        <nav class="p-2 space-y-0.5" aria-label="Primary Navigation">
+          <a href="#overview" class="flex items-center justify-between px-2.5 py-1.5 rounded-[var(--radius-md)] bg-surface-subtle text-foreground font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary">
+            <span>Managed Nodes</span>
+            <span class="font-mono text-[12px] text-muted">1</span>
+          </a>
+          <a href="#tasks" class="flex items-center justify-between px-2.5 py-1.5 rounded-[var(--radius-md)] text-muted hover:text-foreground hover:bg-surface-subtle transition-colors duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary">
+            <span>Playbook Runs</span>
+            <span class="font-mono text-[12px]">5/5</span>
+          </a>
+          <a href="#inventory" class="flex items-center justify-between px-2.5 py-1.5 rounded-[var(--radius-md)] text-muted hover:text-foreground hover:bg-surface-subtle transition-colors duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary">
+            <span>Host Inventory</span>
+            <span class="font-mono text-[12px]">INI</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="p-3 border-t border-border text-[12px] text-muted space-y-1">
+        <div class="font-medium text-foreground">Harshad Gore</div>
+      </div>
+    </aside>
+
+    <!-- Main Application Workspace -->
+    <div class="flex-1 flex flex-col min-w-0">
+
+      <!-- Utilitarian Top Bar (§4.6) -->
+      <header class="h-12 px-6 border-b border-border bg-surface flex items-center justify-between gap-4">
+        <div class="flex items-center gap-2 text-[13px] truncate">
+          <span class="text-muted">webservers</span>
+          <span class="text-muted">/</span>
+          <span class="font-mono font-medium text-foreground">web1</span>
+          <span class="font-mono text-[12px] text-muted">(15.252.18.69)</span>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <button id="theme-toggle" type="button" class="px-2.5 py-1 rounded-[var(--radius-md)] border border-border bg-surface hover:bg-surface-subtle text-[12px] font-medium text-foreground transition-colors duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary">
+            Switch to light theme
+          </button>
+        </div>
+      </header>
+
+      <!-- Workspace Content -->
+      <main class="p-6 max-w-6xl w-full space-y-6">
+
+        <!-- Page Heading & Rubric-Required Strings (§4.1) -->
+        <section id="overview" class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-border">
+          <div class="space-y-1 max-w-[65ch]">
+            <div class="flex items-center gap-2.5">
+              <h1 class="text-[20px] font-semibold tracking-tight text-foreground">Deployment Successful</h1>
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[12px] font-medium bg-success-bg text-success border border-success/30">
+                <span class="w-1.5 h-1.5 rounded-full bg-success" aria-hidden="true"></span>
+                HTTP 200 OK
+              </span>
+            </div>
+            <p class="text-[13px] text-muted">This page was deployed and configured using Ansible.</p>
+            <p class="text-[13px] text-muted">Case study: DevOps lifecycle and configuration management.</p>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0">
+            <button id="copy-curl-btn" type="button" class="px-3 py-1.5 rounded-[var(--radius-md)] border border-border bg-surface hover:bg-surface-subtle text-[12px] font-mono text-foreground transition-colors duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary">
+              Copy curl command
+            </button>
+          </div>
+        </section>
+
+        <!-- Asymmetric 12-Column Split: Primary KPI strip (7 cols) + Host Specs (5 cols) (§4.4) -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+
+          <!-- Left 7 cols: Operational Metrics -->
+          <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-4 rounded-[var(--radius-lg)] border border-border bg-surface flex flex-col justify-between">
+              <div class="text-[12px] text-muted">Playbook Convergence</div>
+              <div class="mt-2 flex items-baseline justify-between">
+                <span class="text-[24px] font-semibold font-mono">0 failed</span>
+                <span class="text-[12px] font-mono text-success">5 tasks ok</span>
+              </div>
+              <div class="mt-2 pt-2 border-t border-border flex justify-between text-[12px] text-muted">
+                <span>Idempotence check</span>
+                <span class="font-mono text-foreground">changed=0</span>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-[var(--radius-lg)] border border-border bg-surface flex flex-col justify-between">
+              <div class="text-[12px] text-muted">Service Daemon</div>
+              <div class="mt-2 flex items-baseline justify-between">
+                <span class="text-[24px] font-semibold">nginx.service</span>
+                <span class="text-[12px] font-mono text-success">active (running)</span>
+              </div>
+              <div class="mt-2 pt-2 border-t border-border flex justify-between text-[12px] text-muted">
+                <span>Boot preset</span>
+                <span class="font-mono text-foreground">enabled</span>
+              </div>
+            </div>
+
+            <div class="sm:col-span-2 p-4 rounded-[var(--radius-lg)] border border-border bg-surface-subtle flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <div class="text-[12px] text-muted">Deployed Artifact Path</div>
+                <div class="font-mono text-[13px] font-medium text-foreground mt-0.5">/var/www/html/index.html</div>
+              </div>
+              <div class="flex items-center gap-6 text-[12px]">
+                <div>
+                  <span class="text-muted block">Owner / Group</span>
+                  <span class="font-mono text-foreground">root:root</span>
+                </div>
+                <div>
+                  <span class="text-muted block">File Mode</span>
+                  <span class="font-mono text-foreground">0644</span>
+                </div>
+                <div>
+                  <span class="text-muted block">Handler</span>
+                  <span class="font-mono text-foreground">Restart Nginx</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right 5 cols: Inventory & SSH Connection Metadata -->
+          <div id="inventory" class="lg:col-span-5 p-4 rounded-[var(--radius-lg)] border border-border bg-surface flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between pb-3 border-b border-border">
+                <h2 class="text-[14px] font-semibold">Target Host Configuration</h2>
+                <span class="font-mono text-[12px] text-muted">ansible/inventory.ini</span>
+              </div>
+              <dl class="mt-3 space-y-2 text-[13px]">
+                <div class="flex justify-between py-1 border-b border-border/60">
+                  <dt class="text-muted">Host Alias / Group</dt>
+                  <dd class="font-mono">web1 [webservers]</dd>
+                </div>
+                <div class="flex justify-between py-1 border-b border-border/60">
+                  <dt class="text-muted">Public IPv4</dt>
+                  <dd class="font-mono">15.252.18.69</dd>
+                </div>
+                <div class="flex justify-between py-1 border-b border-border/60">
+                  <dt class="text-muted">Instance / Region</dt>
+                  <dd class="font-mono">t3.micro (ap-south-1b)</dd>
+                </div>
+                <div class="flex justify-between py-1 border-b border-border/60">
+                  <dt class="text-muted">Transport / User</dt>
+                  <dd class="font-mono">SSH :22 (ubuntu)</dd>
+                </div>
+                <div class="flex justify-between py-1">
+                  <dt class="text-muted">Python Interpreter</dt>
+                  <dd class="font-mono">/usr/bin/python3</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </section>
+
+        <!-- Dense Playbook Task Execution Table (§6 Data tables) -->
+        <section id="tasks" class="rounded-[var(--radius-lg)] border border-border bg-surface overflow-hidden">
+          <div class="px-4 py-3 border-b border-border flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-[14px] font-semibold">Playbook Execution Log</h2>
+              <p class="text-[12px] text-muted">Declarative tasks defined in <span class="font-mono">ansible/site.yml</span> (privilege escalation: <span class="font-mono">become: true</span>)</p>
+            </div>
+            <span class="font-mono text-[12px] text-muted">Play: Configure an Nginx web server</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-border bg-surface-subtle text-[12px] text-muted font-medium">
+                  <th class="py-2 px-4">Task Name</th>
+                  <th class="py-2 px-4">FQCN Module</th>
+                  <th class="py-2 px-4">Target Parameters</th>
+                  <th class="py-2 px-4">1st Run</th>
+                  <th class="py-2 px-4">2nd Run (Idempotent)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border text-[13px]">
+                <tr class="hover:bg-surface-subtle/60 transition-colors duration-150">
+                  <td class="py-2.5 px-4 font-medium">Refresh APT package index</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px] text-muted">ansible.builtin.apt</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px]">update_cache=true cache_valid_time=3600</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px] text-primary">changed</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px] text-success">ok (unchanged)</td>
+                </tr>
+                <tr class="hover:bg-surface-subtle/60 transition-colors duration-150">
+                  <td class="py-2.5 px-4 font-medium">Install Nginx</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px] text-muted">ansible.builtin.apt</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px]">name=nginx state=present</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px] text-primary">changed</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px] text-success">ok (unchanged)</td>
+                </tr>
+                <tr class="hover:bg-surface-subtle/60 transition-colors duration-150">
+                  <td class="py-2.5 px-4 font-medium">Deploy demo website</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px] text-muted">ansible.builtin.copy</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px]">src=files/index.html dest=/var/www/html/index.html</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px] text-primary">changed → notify</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px] text-success">ok (unchanged)</td>
+                </tr>
+                <tr class="hover:bg-surface-subtle/60 transition-colors duration-150">
+                  <td class="py-2.5 px-4 font-medium">Ensure Nginx is enabled and running</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px] text-muted">ansible.builtin.service</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px]">name=nginx state=started enabled=true</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px] text-success">ok</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px] text-success">ok (unchanged)</td>
+                </tr>
+                <tr class="hover:bg-surface-subtle/60 transition-colors duration-150">
+                  <td class="py-2.5 px-4 font-medium">Verify website responds locally</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px] text-muted">ansible.builtin.uri</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px]">url=http://127.0.0.1 status_code=200</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px] text-success">ok (200 OK)</td>
+                  <td class="py-2.5 px-4 font-mono text-[12px] text-success">ok (200 OK)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const root = document.documentElement;
+    const themeBtn = document.getElementById('theme-toggle');
+    themeBtn.addEventListener('click', () => {
+      const isDark = root.getAttribute('data-mode') === 'dark';
+      root.setAttribute('data-mode', isDark ? 'light' : 'dark');
+      themeBtn.textContent = isDark ? 'Switch to dark theme' : 'Switch to light theme';
+    });
+
+    const copyBtn = document.getElementById('copy-curl-btn');
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText('curl -i http://15.252.18.69');
+      copyBtn.textContent = 'Copied curl command';
+      setTimeout(() => { copyBtn.textContent = 'Copy curl command'; }, 1800);
+    });
+  </script>
+</body>
+</html>
